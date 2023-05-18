@@ -31,6 +31,7 @@ OEM_DIR="$PROJECT_DIR/oem/"
 
 ADD_DEVTOOLS=false
 INSTALL_ALIBABA=false
+INSTALL_TENCENT=false
 INSTALL_AWS=false
 INSTALL_AZURE=false
 INSTALL_GCE=false
@@ -41,6 +42,7 @@ function print_help {
     echo "Optional arguments:"
     echo "  --add-dev-tools       Adds tools to verify code style and functionality"
     echo "  --alibaba             Installs only tools needed for alibaba"
+    echo "  --tencent             Installs only tools needed for tencent"
     echo "  --aws                 Installs only tools needed for aws"
     echo "  --azure               Installs only tools needed for azure"
     echo "  --gce                 Installs only tools needed for gce"
@@ -72,12 +74,16 @@ function create_version_metadata {
     fi
     if [ "$INSTALL_ALL" == "true" ]; then
 	echo "$json_write" > "${marker_location}/.alibaba.json"
+	echo "$json_write" > "${marker_location}/.tencent.json"
 	echo "$json_write" > "${marker_location}/.aws.json"
 	echo "$json_write" > "${marker_location}/.azure.json"
 	echo "$json_write" > "${marker_location}/.gce.json"
     else
 	if [ "$INSTALL_ALIBABA" == "true" ]; then
            echo "$json_write" > "${marker_location}/.alibaba.json"
+	fi
+	if [ "$INSTALL_TENCENT" == "true" ]; then
+           echo "$json_write" > "${marker_location}/.tencent.json"
 	fi
 	if [ "$INSTALL_AWS" == "true" ]; then
             echo "$json_write" > "${marker_location}/.aws.json"
@@ -122,6 +128,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --alibaba)
             INSTALL_ALIBABA=true
+	    INSTALL_ALL=false
+	    ;;
+	--tencent)
+            INSTALL_TENCENT=true
 	    INSTALL_ALL=false
 	    ;;
 	--aws)
@@ -441,6 +451,15 @@ if [ "$INSTALL_ALIBABA" == "true" ] || [ "$INSTALL_ALL" == "true" ]; then
     # aliyun python APIs used in alibaba_commands.py
     pip3 install aliyun-python-sdk-core==2.13.33
     pip3 install aliyun-python-sdk-ecs==4.23.11
+fi
+
+#-----------------------------------------------------------------------------#
+# Tencent package setup.
+#------------------------------#
+if [ "$INSTALL_TENCENT" == "true" ] || [ "$INSTALL_ALL" == "true" ]; then
+    # tencent cloud python APIs used in tencent_commands.py
+    # https://github.com/tencentcloud/tencentcloud-sdk-python
+    pip3 install tencentcloud-sdk-python
 fi
 
 
